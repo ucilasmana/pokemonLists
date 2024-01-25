@@ -1,0 +1,1 @@
+If you are interested in how this project works, you can visit this link, https://ucilasmana.github.io/pokemonLists/
