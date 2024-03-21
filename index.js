@@ -113,46 +113,63 @@ function displayPokemonListGraph(pokemonList) {
     }
 
 //REST
-fetch('https://pokeapi.co/api/v2/pokemon?limit=15')
-.then(response => response.json())
-.then(data => displayPokemonListREST(data.results))
-.catch(error => console.error('Error:', error));
+async function fetchREST(url){
+  try{
+    const response = await fetch(url)
+    const data = await response.json()
+    displayPokemonListREST(data.results)
+  }
+  catch(error)
+  {
+    console.error('Error:', error)
+  }
+}
+fetchREST('https://pokeapi.co/api/v2/pokemon?limit=15')
+
+
 //GraphQL
-fetch('https://beta.pokeapi.co/graphql/v1beta', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    query: `
-    query {
-      pokemon_v2_pokemon(limit: 15, offset: 15) {
-        id
-        name
-        pokemon_v2_pokemonmoves(limit: 6) {
-          pokemon_v2_move {
-            name
+async function fetchGraph(url){
+  try{
+    const response = await fetch(url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: `
+          query {
+            pokemon_v2_pokemon(limit: 15, offset: 15) {
+              id
+              name
+              pokemon_v2_pokemonmoves(limit: 6) {
+                pokemon_v2_move {
+                  name
+                }
+              }
+              pokemon_v2_pokemontypes(limit: 3){
+                pokemon_v2_type {
+                  name
+                }
+              }
+              pokemon_v2_pokemonabilities(limit: 3) {
+                pokemon_v2_ability {
+                  name
+                }
+              }
+              pokemon_v2_pokemonsprites {
+                sprites
+              }
+            }
           }
-        }
-        pokemon_v2_pokemontypes(limit: 3){
-          pokemon_v2_type {
-            name
-          }
-        }
-        pokemon_v2_pokemonabilities(limit: 3) {
-          pokemon_v2_ability {
-            name
-          }
-        }
-        pokemon_v2_pokemonsprites {
-          sprites
-        }
-      }
-    }
-    `,
-  }),
-})
-.then(response => response.json())
-.then(data => displayPokemonListGraph(data.data.pokemon_v2_pokemon))
-.catch(error => console.error('Error:', error));
-
-
+          `,
+        }),
+      })
+    const data = await response.json()
+    displayPokemonListGraph(data.data.pokemon_v2_pokemon)
+  }
+  catch(error)
+  {
+    console.error('Error:', error)
+  }
+}
+fetchGraph('https://beta.pokeapi.co/graphql/v1beta')
 
